@@ -18,5 +18,5 @@ metadata:
 spec:
   type: data-product
   owner: Marco La Martina
-  lifecycle: provisioned
+  lifecycle: deprecated
   system: sales
