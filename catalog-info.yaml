@@ -6,17 +6,17 @@ metadata:
   annotations:
     github.com/project-slug: agilelab7/dataplt-sales-dataproduct-1
   links:
-    - url: https://github.com/agilelab7/dataplt-sales-dataproduct-1/actions/workflows/editor.yml
-      title: Edit Action
-      icon: github
-    - url: https://github.com/agilelab7/dataplt-sales-dataproduct-1/actions/workflows/deleter.yml
-      title: Delete Action
-      icon: github
-    - url: https://github.com/agilelab7/dataplt-sales-dataproduct-1/actions/workflows/provisioner.yml
-      title: Provisioner Action
-      icon: github
+  - url: https://github.com/agilelab7/dataplt-sales-dataproduct-1/actions/workflows/editor.yml
+    title: Edit Action
+    icon: github
+  - url: https://github.com/agilelab7/dataplt-sales-dataproduct-1/actions/workflows/deleter.yml
+    title: Delete Action
+    icon: github
+  - url: https://github.com/agilelab7/dataplt-sales-dataproduct-1/actions/workflows/provisioner.yml
+    title: Provisioner Action
+    icon: github
 spec:
   type: data-product
   owner: Marco La Martina
-  lifecycle: development
+  lifecycle: provisioned
   system: sales
