@@ -1,0 +1,13 @@
+environments:
+  dev:
+    databricks_host: adb-3344957454320375.15.azuredatabricks.net
+    databricks_endpoint: /sql/1.0/warehouses/5c86494fd3e4000c
+    metastore_type: hive
+  test:
+    databricks_host: adb-3344957454320375.15.azuredatabricks.net
+    databricks_endpoint: /sql/1.0/warehouses/5c86494fd3e4000c
+    metastore_type: hive
+  prod:
+    databricks_host: adb-3344957454320375.15.azuredatabricks.net
+    databricks_endpoint: /sql/1.0/warehouses/5c86494fd3e4000c
+    metastore_type: hive

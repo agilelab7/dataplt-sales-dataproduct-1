@@ -1,0 +1,63 @@
+name: Deleter
+
+on:
+  workflow_dispatch:
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install databricks-sdk databricks-sql-connector[pyarrow] pyyaml
+
+      - name: Set DATABRICKS_TOKEN by environment
+        id: set-token
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "DATABRICKS_TOKEN=${{ secrets.DATABRICKS_TOKEN_PROD }}" >> "$GITHUB_ENV"
+            echo "ENVIRONMENT=prod" >> "$GITHUB_ENV"
+          elif [[ "${{ github.ref_name }}" == "test" ]]; then
+            echo "DATABRICKS_TOKEN=${{ secrets.DATABRICKS_TOKEN_TEST }}" >> "$GITHUB_ENV"
+            echo "ENVIRONMENT=test" >> "$GITHUB_ENV"
+          elif [[ "${{ github.ref_name }}" == "dev" ]]; then
+            echo "DATABRICKS_TOKEN=${{ secrets.DATABRICKS_TOKEN_DEV }}" >> "$GITHUB_ENV"
+            echo "ENVIRONMENT=dev" >> "$GITHUB_ENV"
+          else
+            echo "❌ Branch non supportato: ${{ github.ref_name }}"
+            exit 1
+          fi
+
+      - name: Run deleter
+        env:
+          DATABRICKS_TOKEN: ${{ env.DATABRICKS_TOKEN }}
+          ENVIRONMENT: ${{ env.ENVIRONMENT }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: python scripts/delete_schema.py
+
+      - name: Update catalog-info.yaml lifecycle to deprecated
+        run: python scripts/update_lifecycle.py deprecated
+
+      - name: Commit updated catalog-info.yaml
+        run: |
+          REMOTE_URL=$(git remote get-url origin)
+          if [[ "$REMOTE_URL" == git@github.com:* ]]; then
+            OWNER_REPO=${REMOTE_URL#git@github.com:}
+          elif [[ "$REMOTE_URL" == https://github.com/* ]]; then
+            OWNER_REPO=${REMOTE_URL#https://github.com/}
+          fi
+          OWNER_REPO=${OWNER_REPO%.git}
+          git remote set-url origin https://x-access-token:${{ secrets.ORG_PAT }}@github.com/${OWNER_REPO}.git
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add catalog-info.yaml
+          git commit -m 'Update lifecycle to deprecated' || echo 'No changes to commit'
+          git push
